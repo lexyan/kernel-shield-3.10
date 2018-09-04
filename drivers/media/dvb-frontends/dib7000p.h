@@ -46,6 +46,26 @@ struct dib7000p_config {
 
 #define DEFAULT_DIB7000P_I2C_ADDRESS 18
 
+struct dib7000p_ops {
+   int (*set_wbd_ref)(struct dvb_frontend *demod, u16 value);
+   int (*get_agc_values)(struct dvb_frontend *fe,
+       u16 *agc_global, u16 *agc1, u16 *agc2, u16 *wbd);
+   int (*set_agc1_min)(struct dvb_frontend *fe, u16 v);
+   int (*update_pll)(struct dvb_frontend *fe, struct dibx000_bandwidth_config *bw);
+   int (*set_gpio)(struct dvb_frontend *demod, u8 num, u8 dir, u8 val);
+   u32 (*ctrl_timf)(struct dvb_frontend *fe, u8 op, u32 timf);
+   int (*dib7000pc_detection)(struct i2c_adapter *i2c_adap);
+   struct i2c_adapter *(*get_i2c_master)(struct dvb_frontend *demod, enum dibx000_i2c_interface intf, int gating);
+   int (*pid_filter_ctrl)(struct dvb_frontend *fe, u8 onoff);
+   int (*pid_filter)(struct dvb_frontend *fe, u8 id, u16 pid, u8 onoff);
+   int (*i2c_enumeration)(struct i2c_adapter *i2c, int no_of_demods, u8 default_addr, struct dib7000p_config cfg[]);
+   struct i2c_adapter *(*get_i2c_tuner)(struct dvb_frontend *fe);
+   int (*tuner_sleep)(struct dvb_frontend *fe, int onoff);
+   int (*get_adc_power)(struct dvb_frontend *fe);
+   int (*slave_reset)(struct dvb_frontend *fe);
+   struct dvb_frontend *(*init)(struct i2c_adapter *i2c_adap, u8 i2c_addr, struct dib7000p_config *cfg);
+};
+
 #if IS_ENABLED(CONFIG_DVB_DIB7000P)
 extern struct dvb_frontend *dib7000p_attach(struct i2c_adapter *i2c_adap, u8 i2c_addr, struct dib7000p_config *cfg);
 extern struct i2c_adapter *dib7000p_get_i2c_master(struct dvb_frontend *, enum dibx000_i2c_interface, int);

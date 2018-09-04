@@ -32,6 +32,8 @@ MODULE_PARM_DESC(force_lna_activation, "force the activation of Low-Noise-Amplif
 struct dib0700_adapter_state {
 	int (*set_param_save) (struct dvb_frontend *);
 	const struct firmware *frontend_firmware;
+	struct dib7000p_ops dib7000p_ops;
+    struct dib8000_ops dib8000_ops;
 };
 
 /* Hauppauge Nova-T 500 (aka Bristol)
@@ -218,12 +220,21 @@ static struct dibx000_agc_config stk7700d_7000p_mt2266_agc_config[2] = {
 };
 
 static struct dibx000_bandwidth_config stk7700d_mt2266_pll_config = {
-	60000, 30000,
-	1, 8, 3, 1, 0,
-	0, 0, 1, 1, 2,
-	(3 << 14) | (1 << 12) | (524 << 0),
-	0,
-	20452225,
+   .internal = 60000,
+   .sampling = 30000,
+   .pll_prediv = 1,
+   .pll_ratio = 8,
+   .pll_range = 3,
+   .pll_reset = 1,
+   .pll_bypass = 0,
+   .enable_refdiv = 0,
+   .bypclk_div = 0,
+   .IO_CLK_en_core = 1,
+   .ADClkSrc = 1,
+   .modulo = 2,
+   .sad_cfg = (3 << 14) | (1 << 12) | (524 << 0),
+   .ifreq = 0,
+   .timf = 20452225,
 };
 
 static struct dib7000p_config stk7700d_dib7000p_mt2266_config[] = {
