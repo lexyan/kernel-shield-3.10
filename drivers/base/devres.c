@@ -848,6 +848,46 @@ void devm_remove_action(struct device *dev, void (*action)(void *), void *data)
 EXPORT_SYMBOL_GPL(devm_remove_action);
 
 /*
+ * Managed kmalloc/kfree
+ */
+static void devm_kmalloc_release(struct device *dev, void *res)
+{
+	/* noop */
+}
+
+/**
+ * devm_kmalloc - Resource-managed kmalloc
+ * @dev: Device to allocate memory for
+ * @size: Allocation size
+ * @gfp: Allocation gfp flags
+ *
+ * Managed kmalloc.  Memory allocated with this function is
+ * automatically freed on driver detach.  Like all other devres
+ * resources, guaranteed alignment is unsigned long long.
+ *
+ * RETURNS:
+ * Pointer to allocated memory on success, NULL on failure.
+ */
+void * devm_kmalloc(struct device *dev, size_t size, gfp_t gfp)
+{
+	struct devres *dr;
+
+	/* use raw alloc_dr for kmalloc caller tracing */
+	dr = alloc_dr(devm_kmalloc_release, size, gfp);
+	if (unlikely(!dr))
+		return NULL;
+
+	/*
+	 * This is named devm_kzalloc_release for historical reasons
+	 * The initial implementation did not support kmalloc, only kzalloc
+	 */
+	set_node_dbginfo(&dr->node, "devm_kmalloc_release", size);
+	devres_add(dev, dr->data);
+	return dr->data;
+}
+EXPORT_SYMBOL_GPL(devm_kmalloc);
+
+/*
  * Managed kzalloc/kfree
  */
 static void devm_kzalloc_release(struct device *dev, void *res)
