@@ -197,6 +197,7 @@
 		nvidia,bootloader-xusb-enable;
 		nvidia,bootloader-vbus-enable=<0x3>;
 		bootargs = "androidboot.secureos=tlk";
+		firmware-blob-partition = "RP4";
         };
 
 	gpio-ir-receiver {
